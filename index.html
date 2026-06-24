@@ -35,6 +35,7 @@
             padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin-top: 20px;
         }
 
         h1 { text-align: center; font-size: 1.6rem; margin-bottom: 10px; color: #fff; direction: ltr; }
@@ -56,8 +57,6 @@
             border-right: 5px solid transparent;
         }
 
-        .task-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.12); }
-
         .daily { border-right-color: var(--daily-color); }
         .even { border-right-color: var(--even-color); }
         .odd { border-right-color: var(--odd-color); }
@@ -68,23 +67,19 @@
         .done-btn {
             background: rgba(255,255,255,0.1); border: none; color: white;
             width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
-            transition: 0.3s; display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .done-btn:hover { background: #2ed573; transform: rotate(15deg); }
 
         .completed {
             opacity: 0.3;
             text-decoration: line-through;
             pointer-events: none;
-            filter: grayscale(1);
         }
 
         #motivation-box {
             position: fixed; bottom: 30px; padding: 15px 25px;
             background: #f1c40f; color: #000; border-radius: 50px;
             font-weight: bold; display: none; z-index: 1000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -92,7 +87,7 @@
 
     <div class="container animate__animated animate__fadeIn">
         <h1>NOMDAR To Do LIst</h1>
-        <div id="day-badge" class="day-badge">...</div>
+        <div id="day-badge" class="day-badge">در حال بارگذاری...</div>
         <div id="todo-list"></div>
     </div>
 
@@ -113,7 +108,7 @@
             { text: "🎯 تمرکز لیزری", type: "routine" }
         ];
 
-        const quotes = ["دمت گرم سلطان!", "داری میترکونی 🔥", "یک قدم تا هدف 🚀", "عالی بود قهرمان!", "ادامه بده، تو برنده ای 👑"];
+        const quotes = ["دمت گرم سلطان!", "داری میترکونی 🔥", "عالی بود قهرمان!", "تو برنده ای 👑"];
 
         function initApp() {
             const listElement = document.getElementById('todo-list');
@@ -130,9 +125,7 @@
             allTasks.forEach((task, index) => {
                 if (task.type === "routine" || task.type === "daily" || (task.type === "even" && isEven) || (task.type === "odd" && !isEven)) {
                     const card = document.createElement('div');
-                    card.className = `task-card ${task.type} animate__animated animate__fadeInUp`;
-                    card.style.animationDelay = `${index * 0.05}s`;
-                    
+                    card.className = `task-card ${task.type}`;
                     card.innerHTML = `
                         <span class="task-text">${task.text}</span>
                         <button class="done-btn" onclick="completeTask(this)">✓</button>
@@ -152,12 +145,11 @@
             msgBox.className = 'animate__animated animate__bounceInUp';
 
             setTimeout(() => {
-                msgBox.className = 'animate__animated animate__fadeOutDown';
-                setTimeout(() => { msgBox.style.display = 'none'; }, 2500);
+                msgBox.style.display = 'none';
             }, 2500);
         }
 
-        initApp();
+        window.onload = initApp;
     </script>
 </body>
 </html>
