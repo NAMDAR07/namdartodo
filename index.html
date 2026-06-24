@@ -12,6 +12,7 @@
             --even-color: #00d2ff;
             --odd-color: #2ed573;
             --routine-color: #f1c40f;
+            --friday-color: #a55eea;
         }
 
         body {
@@ -42,7 +43,8 @@
         
         .day-badge {
             display: block; text-align: center; font-size: 0.9rem; margin-bottom: 25px;
-            padding: 8px; border-radius: 12px; background: rgba(255,255,255,0.1);
+            padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.1);
+            font-weight: bold;
         }
 
         .task-card {
@@ -61,6 +63,7 @@
         .even { border-right-color: var(--even-color); }
         .odd { border-right-color: var(--odd-color); }
         .routine { border-right-color: var(--routine-color); }
+        .friday-special { border-right-color: var(--friday-color); }
 
         .task-text { font-size: 1.05rem; font-weight: 500; }
 
@@ -89,7 +92,7 @@
         <h1>NOMDAR To Do LIst</h1>
         <div id="day-badge" class="day-badge">...</div>
         <div id="todo-list"></div>
-        <button onclick="resetTasks()" style="margin-top: 20px; background: none; border: 1px solid rgba(255,255,255,0.2); color: #aaa; cursor: pointer; border-radius: 10px; padding: 5px 10px;">ریست کردن تیک‌ها برای فردا</button>
+        <button onclick="resetTasks()" style="margin-top: 25px; background: none; border: 1px solid rgba(255,255,255,0.2); color: #aaa; cursor: pointer; border-radius: 10px; padding: 8px 15px; width: 100%;">ریست کردن تیک‌ها برای شروع روز جدید</button>
     </div>
 
     <div id="motivation-box" class="animate__animated"></div>
@@ -100,39 +103,62 @@
             { id: 2, text: "📚 یادگیری زبان", type: "daily" },
             { id: 3, text: "💻 برنامه‌نویسی", type: "daily" },
             { id: 4, text: "🤝 تقویت ارتباطات", type: "daily" },
-            { id: 5, text: "🎬 سناریو نویسی", type: "even" },
-            { id: 6, text: "✂️ تدوین ویدیو", type: "even" },
-            { id: 7, text: "🤖 هوش مصنوعی", type: "odd" },
-            { id: 8, text: "🎨 طراحی گرافیک", type: "odd" },
+            { id: 5, text: "🎬 سناریو نویسی", type: "even" }, // شنبه، دوشنبه، چهارشنبه
+            { id: 6, text: "✂️ تدوین ویدیو", type: "even" },   // شنبه، دوشنبه، چهارشنبه
+            { id: 7, text: "🤖 هوش مصنوعی", type: "odd" },    // یکشنبه، سه‌شنبه، پنجشنبه
+            { id: 8, text: "🎨 طراحی گرافیک", type: "odd" },   // یکشنبه، سه‌شنبه، پنجشنبه
             { id: 9, text: "📖 خواندن کتاب", type: "routine" },
             { id: 10, text: "🥗 رعایت رژیم غذایی", type: "routine" },
             { id: 11, text: "🎯 تمرکز لیزری", type: "routine" }
         ];
 
-        const quotes = ["دمت گرم سلطان!", "داری میترکونی 🔥", "عالی بود قهرمان!", "تو برنده ای 👑"];
+        const dayNames = ["یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"];
 
         function initApp() {
             const listElement = document.getElementById('todo-list');
             const dayBadge = document.getElementById('day-badge');
             
-            const today = new Date().getDate();
-            const isEven = today % 2 === 0;
+            // گرفتن روز هفته (0 برای یکشنبه، 6 برای شنبه)
+            const dayIndex = new Date().getDay(); 
+            const dayName = dayNames[dayIndex];
 
-            dayBadge.innerText = isEven ? "🗓️ امروز روز زوجه" : "🗓️ امروز روز فرده";
-            dayBadge.style.color = isEven ? "var(--even-color)" : "var(--odd-color)";
+            // منطق زوج و فرد ایرانی
+            // زوج: شنبه(6)، دوشنبه(1)، چهارشنبه(3)
+            // فرد: یکشنبه(0)، سه‌شنبه(2)، پنجشنبه(4)
+            // جمعه: (5)
+            const isEvenDay = [6, 1, 3].includes(dayIndex);
+            const isOddDay = [0, 2, 4].includes(dayIndex);
+            const isFriday = dayIndex === 5;
+
+            let statusText = `امروز ${dayName} است - `;
+            if (isEvenDay) {
+                statusText += "روز زوجه 🔵";
+                dayBadge.style.color = "var(--even-color)";
+            } else if (isOddDay) {
+                statusText += "روز فرده 🟢";
+                dayBadge.style.color = "var(--odd-color)";
+            } else {
+                statusText += "روز جمعه و استراحته 🟣";
+                dayBadge.style.color = "var(--friday-color)";
+            }
+            dayBadge.innerText = statusText;
 
             const completedTasks = JSON.parse(localStorage.getItem('nomdar_done') || "[]");
-
             listElement.innerHTML = "";
 
             allTasks.forEach((task) => {
-                if (task.type === "routine" || task.type === "daily" || (task.type === "even" && isEven) || (task.type === "odd" && !isEven)) {
+                let showTask = false;
+                if (task.type === "routine" || task.type === "daily") showTask = true;
+                if (task.type === "even" && isEvenDay) showTask = true;
+                if (task.type === "odd" && isOddDay) showTask = true;
+
+                if (showTask) {
                     const isDone = completedTasks.includes(task.id);
                     const card = document.createElement('div');
                     card.className = `task-card ${task.type} ${isDone ? 'completed' : ''}`;
                     card.innerHTML = `
                         <span class="task-text">${task.text}</span>
-                        <button class="done-btn" onclick="completeTask(${task.id}, this)">${isDone ? '✓' : '✓'}</button>
+                        <button class="done-btn" onclick="completeTask(${task.id}, this)">✓</button>
                     `;
                     listElement.appendChild(card);
                 }
@@ -142,25 +168,21 @@
         function completeTask(id, btn) {
             const card = btn.parentElement;
             if (card.classList.contains('completed')) return;
-
             card.classList.add('completed');
-            
             let completedTasks = JSON.parse(localStorage.getItem('nomdar_done') || "[]");
             if (!completedTasks.includes(id)) {
                 completedTasks.push(id);
                 localStorage.setItem('nomdar_done', JSON.stringify(completedTasks));
             }
-
             const msgBox = document.getElementById('motivation-box');
-            msgBox.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            msgBox.innerText = "دمت گرم سلطان!";
             msgBox.style.display = 'block';
             msgBox.className = 'animate__animated animate__bounceInUp';
-
-            setTimeout(() => { msgBox.style.display = 'none'; }, 2500);
+            setTimeout(() => { msgBox.style.display = 'none'; }, 2000);
         }
 
         function resetTasks() {
-            if(confirm("سلطان، مطمئنی می‌خوای تیک‌ها رو پاک کنی؟")) {
+            if(confirm("سلطان، تیک‌ها رو برای امروز پاک کنم؟")) {
                 localStorage.removeItem('nomdar_done');
                 initApp();
             }
