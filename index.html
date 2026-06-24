@@ -2,110 +2,165 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>NAMDAR To Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد موفقیت سلطان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Vazirmatn:wght@400;700&display=swap');
-        
-        body { font-family: 'Vazirmatn', sans-serif; background: #0a0a0a; color: #e0e0e0; margin: 0; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
-        h1 { color: #3b82f6; text-align: center; font-family: 'Poppins', sans-serif; margin-bottom: 25px; }
-        
-        .task-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px; border-bottom: 1px solid #333; 
-            animation: fadeIn 0.4s ease-in-out;
+        :root {
+            --daily-color: #ff4757;
+            --even-color: #00d2ff;
+            --odd-color: #2ed573;
+            --routine-color: #f1c40f; /* رنگ طلایی برای کارهای اختیاری/ثابت */
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        h1 { text-align: center; font-size: 1.6rem; margin-bottom: 10px; color: #fff; }
         
-        .stats { margin-bottom: 25px; padding: 15px; background: #252525; border-radius: 12px; }
-        #progressFill { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); width: 0%; transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #fff; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: #3b82f6; outline: none; }
-        button { width: 100%; padding: 12px; margin-top: 5px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: transform 0.2s, background 0.3s; }
-        button:hover { background: #2563eb; transform: scale(1.02); }
-        
-        .done { text-decoration: line-through; opacity: 0.5; transform: scale(0.98); transition: 0.3s; }
-        .btn-act { cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 4px; transition: 0.2s; }
-        .edit { color: #facc15; border: 1px solid #facc15; }
-        .del { color: #ef4444; border: 1px solid #ef4444; }
-        .btn-act:hover { filter: brightness(1.5); }
+        .day-badge {
+            display: block; text-align: center; font-size: 0.9rem; margin-bottom: 25px;
+            padding: 8px; border-radius: 12px; background: rgba(255,255,255,0.1);
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+            padding: 16px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+            border-right: 5px solid transparent;
+        }
+
+        .task-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.12); }
+
+        /* استایل رنگ‌ها */
+        .daily { border-right-color: var(--daily-color); }
+        .even { border-right-color: var(--even-color); }
+        .odd { border-right-color: var(--odd-color); }
+        .routine { border-right-color: var(--routine-color); }
+
+        .task-text { font-size: 1.05rem; font-weight: 500; }
+
+        .done-btn {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+
+        .done-btn:hover { background: #2ed573; transform: rotate(15deg); }
+
+        .completed {
+            opacity: 0.3;
+            text-decoration: line-through;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+
+        #motivation-box {
+            position: fixed; bottom: 30px; padding: 15px 25px;
+            background: #f1c40f; color: #000; border-radius: 50px;
+            font-weight: bold; display: none; z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>NAMDAR To Do List</h1>
-    
-    <div class="stats">
-        <div id="statsText">۰ از ۰ کار انجام شده</div>
-        <div id="statusMessage" style="font-size: 13px; color: #3b82f6; margin-top:5px; font-weight: 600;"></div>
-        <div id="progressBar" style="height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-top: 5px;">
-            <div id="progressFill"></div>
-        </div>
+    <div class="container animate__animated animate__fadeIn">
+        <h1>برنامه موفقیت سلطان</h1>
+        <div id="day-badge" class="day-badge">...</div>
+        <div id="todo-list"></div>
     </div>
 
-    <input type="text" id="searchInput" placeholder="🔍 جستجو در کارها..." oninput="renderTasks()">
-    <input type="text" id="taskInput" placeholder="کار جدید چی داری؟">
-    <button onclick="addTask()">افزودن</button>
-    <div id="taskList" style="margin-top: 15px;"></div>
-</div>
+    <div id="motivation-box" class="animate__animated"></div>
 
-<script>
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    <script>
+        // لیست تمام کارها
+        const allTasks = [
+            { text: "⏰ بیدار شدن ساعت ۶ صبح", type: "routine" }, // اول لیست
+            { text: "📚 یادگیری زبان", type: "daily" },
+            { text: "💻 برنامه‌نویسی", type: "daily" },
+            { text: "🤝 تقویت ارتباطات", type: "daily" },
+            { text: "🎬 سناریو نویسی", type: "even" },
+            { text: "✂️ تدوین ویدیو", type: "even" },
+            { text: "🤖 هوش مصنوعی", type: "odd" },
+            { text: "🎨 طراحی گرافیک", type: "odd" },
+            { text: "📖 خواندن کتاب", type: "routine" }, // دوتا مونده به آخر
+            { text: "🥗 رعایت رژیم غذایی", type: "routine" }, // یکی مونده به آخر
+            { text: "🎯 تمرکز لیزری", type: "routine" } // آخرین گزینه
+        ];
 
-    function renderTasks() {
-        let filter = document.getElementById("searchInput").value.toLowerCase();
-        let list = document.getElementById("taskList");
-        list.innerHTML = "";
-        
-        let filtered = tasks.filter(t => t.text.toLowerCase().includes(filter));
-        let doneCount = tasks.filter(t => t.done).length;
-        
-        let statusMsg = document.getElementById("statusMessage");
-        let percent = tasks.length ? (doneCount / tasks.length) * 100 : 0;
-        document.getElementById("progressFill").style.width = percent + "%";
-        document.getElementById("statsText").innerText = `${doneCount} از ${tasks.length} کار انجام شده`;
-        
-        if (percent === 100 && tasks.length > 0) statusMsg.innerText = "سلطان، عالی بودی! همه کارها انجام شد.";
-        else if (percent > 50) statusMsg.innerText = "پر قدرت ادامه بده، بیشتر از نصف راه رو رفتی!";
-        else if (tasks.length > 0) statusMsg.innerText = "هنوز کارهای زیادی باقی مونده، بجنب!";
-        else statusMsg.innerText = "لیست خالیه، یه کار جدید اضافه کن.";
+        const quotes = ["دمت گرم سلطان!", "داری میترکونی 🔥", "یک قدم تا هدف 🚀", "عالی بود قهرمان!", "ادامه بده، تو برنده ای 👑"];
 
-        filtered.forEach((t, i) => {
-            let index = tasks.indexOf(t);
-            let div = document.createElement("div");
-            div.className = `task-item ${t.done ? 'done' : ''}`;
-            div.innerHTML = `
-                <span>${t.text}</span>
-                <div style="display: flex; gap: 10px;">
-                    <input type="checkbox" ${t.done ? "checked" : ""} onchange="toggleTask(${index})">
-                    <span class="btn-act edit" onclick="editTask(${index})">ویرایش</span>
-                    <span class="btn-act del" onclick="deleteTask(${index})">حذف</span>
-                </div>
-            `;
-            list.appendChild(div);
-        });
-    }
+        function initApp() {
+            const listElement = document.getElementById('todo-list');
+            const dayBadge = document.getElementById('day-badge');
+            
+            const today = new Date().getDate();
+            const isEven = today % 2 === 0;
 
-    function addTask() {
-        let text = document.getElementById("taskInput").value;
-        if (!text) return alert("سلطان، عنوان کار رو وارد کن!");
-        tasks.push({text, done: false});
-        save();
-        document.getElementById("taskInput").value = "";
-    }
+            dayBadge.innerText = isEven ? "🗓️ امروز روز زوجه" : "🗓️ امروز روز فرده";
+            dayBadge.style.color = isEven ? "var(--even-color)" : "var(--odd-color)";
 
-    function toggleTask(i) { tasks[i].done = !tasks[i].done; save(); }
-    function deleteTask(i) { tasks.splice(i, 1); save(); }
-    function editTask(i) {
-        let newText = prompt("عنوان جدید کار رو وارد کن:", tasks[i].text);
-        if (newText) tasks[i].text = newText;
-        save();
-    }
-    function save() { localStorage.setItem("tasks", JSON.stringify(tasks)); renderTasks(); }
+            listElement.innerHTML = "";
 
-    renderTasks();
-</script>
+            allTasks.forEach((task, index) => {
+                // نمایش کارهای روتین، کارهای روزانه، و کارهای مخصوص همان روز (زوج یا فرد)
+                if (task.type === "routine" || task.type === "daily" || (task.type === "even" && isEven) || (task.type === "odd" && !isEven)) {
+                    const card = document.createElement('div');
+                    card.className = `task-card ${task.type} animate__animated animate__fadeInUp`;
+                    card.style.animationDelay = `${index * 0.05}s`;
+                    
+                    card.innerHTML = `
+                        <span class="task-text">${task.text}</span>
+                        <button class="done-btn" onclick="completeTask(this)">✓</button>
+                    `;
+                    listElement.appendChild(card);
+                }
+            });
+        }
+
+        function completeTask(btn) {
+            const card = btn.parentElement;
+            card.classList.add('completed');
+            
+            const msgBox = document.getElementById('motivation-box');
+            msgBox.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            msgBox.style.display = 'block';
+            msgBox.className = 'animate__animated animate__bounceInUp';
+
+            setTimeout(() => {
+                msgBox.className = 'animate__animated animate__fadeOutDown';
+                setTimeout(() => { msgBox.style.display = 'none'; }, 500);
+            }, 2500);
+        }
+
+        initApp();
+    </script>
 </body>
 </html>
