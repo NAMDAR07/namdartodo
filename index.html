@@ -110,7 +110,7 @@
             { text: "🎨 طراحی گرافیک", type: "odd" },
             { text: "📖 خواندن کتاب", type: "routine" },
             { text: "🥗 رعایت رژیم غذایی", type: "routine" },
-            {  تمرکز لیزری", type: "routine" }
+            { text: "🎯 تمرکز لیزری", type: "routine" }
         ];
 
         const quotes = ["دمت گرم سلطان!", "داری میترکونی 🔥", "یک قدم تا هدف 🚀", "عالی بود قهرمان!", "ادامه بده، تو برنده ای 👑"];
@@ -125,7 +125,7 @@
             dayBadge.innerText = isEven ? "🗓️ امروز روز زوجه" : "🗓️ امروز روز فرده";
             dayBadge.style.color = isEven ? "var(--even-color)" : "var(--odd-color)";
 
-            listEl.innerHTML = "";
+            listElement.innerHTML = "";
 
             allTasks.forEach((task, index) => {
                 if (task.type === "routine" || task.type === "daily" || (task.type === "even" && isEven) || (task.type === "odd" && !isEven)) {
@@ -154,4 +154,10 @@
             setTimeout(() => {
                 msgBox.className = 'animate__animated animate__fadeOutDown';
                 setTimeout(() => { msgBox.style.display = 'none'; }, 2500);
-            }, 
+            }, 2500);
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
